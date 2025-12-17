@@ -104,10 +104,10 @@ always @(*) begin
             next_state = start ? READ_9_PIXELS : IDLE;
 
         READ_9_PIXELS:
-            next_state = READ_3_PIXELS;
+            next_state = (counter == 4'd10) ? MULTIPLY : READ_9_PIXELS;
 
         READ_3_PIXELS:
-            next_state = MULTIPLY;
+            next_state = (counter == 4'd4) ? MULTIPLY : READ_3_PIXELS;
 
         MULTIPLY:
             next_state = ACCUMULATE;
@@ -173,21 +173,21 @@ always @(posedge clk or negedge rst_n) begin
         bram0_addr <= 32'd0;
     end else if (state == READ_9_PIXELS) begin
         case (counter)
-            4'd0: bram0_addr <= ???;
-            4'd1: bram0_addr <= ???;
-            4'd2: bram0_addr <= ???;
-            4'd3: bram0_addr <= ???;
-            4'd4: bram0_addr <= ???;
-            4'd5: bram0_addr <= ???;
-            4'd6: bram0_addr <= ???;
-            4'd7: bram0_addr <= ???;
-            4'd8: bram0_addr <= ???;
+            4'd0: bram0_addr <= (y - 1) * IMG_WIDTH + (x - 1) << 2; 
+            4'd1: bram0_addr <= (y - 1) * IMG_WIDTH + (x)     << 2;                 
+            4'd2: bram0_addr <= (y - 1) * IMG_WIDTH + (x + 1) << 2;
+            4'd3: bram0_addr <= (y)     * IMG_WIDTH + (x - 1) << 2; 
+            4'd4: bram0_addr <= (y)     * IMG_WIDTH + (x)     << 2;                
+            4'd5: bram0_addr <= (y)     * IMG_WIDTH + (x + 1) << 2;
+            4'd6: bram0_addr <= (y + 1) * IMG_WIDTH + (x - 1) << 2; 
+            4'd7: bram0_addr <= (y + 1) * IMG_WIDTH + (x)     << 2;                 
+            4'd8: bram0_addr <= (y + 1) * IMG_WIDTH + (x + 1) << 2;
         endcase
     end else if (state == READ_3_PIXELS) begin
         case (counter)
-            4'd0: bram0_addr <= ???;
-            4'd1: bram0_addr <= ???;
-            4'd2: bram0_addr <= ???;
+            4'd0: bram0_addr <= (y - 1) * IMG_WIDTH + (x + 1) << 2;
+            4'd1: bram0_addr <= (y)     * IMG_WIDTH + (x + 1) << 2;
+            4'd2: bram0_addr <= (y + 1) * IMG_WIDTH + (x + 1) << 2;
         endcase
     end else begin
         bram0_addr <= 32'd0;
@@ -312,7 +312,7 @@ always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         bram1_addr <= 32'd0;
     end else if (state == WRITE) begin
-        bram1_addr <= ???;
+        bram1_addr <= y * IMG_WIDTH + x << 2;
     end
 end
 
